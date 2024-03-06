@@ -5,10 +5,6 @@ from psycopg2 import sql
 
 #Define Credentials
 
-dbname = "kohle147"
-dbuser = "kohle147"
-dbbpass = "student"
-dbhost = "spatialdb.healthgeog.org"
 
 #Opens Password - Not Needed Until Connecting to Cloud
 with open(r"\\Mac\Home\Documents\GitHub\GIS5572\secure\database.txt", 'r') as file:

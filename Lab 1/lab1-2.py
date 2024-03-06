@@ -5,11 +5,6 @@ from psycopg2 import sql
 
 app = Flask(__name__)
 
-#Define d
-dbname = "kohle147"
-dbuser = "kohle147"
-dbbpass = "student"
-dbhost = "spatialdb.healthgeog.org"
 
 with open(r"\\Mac\Home\Documents\GitHub\GIS5572\secure\database.txt", 'r') as file:
     database_key = file.read().strip()

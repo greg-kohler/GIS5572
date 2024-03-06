@@ -1,0 +1,216 @@
+,Instruction Sets,,,
+How to…,ArcPro GUI,ArcPy,Fiona/Shapely,PostGIS
+Create a feature class,Catalog > right click database > New > Feature Class > Name it > Choose type of feature class > create fields > choose projection system -> Create,"#Create feature class
+spatial_reference = arcpy.SpatialReference(4326)
+thing1 = ""EmptyClass""
+
+arcpy.CreateFeatureclass_management(out_path = arcpy.env.workspace,
+                                     out_name = thing1,
+                                     spatial_reference = spatial_reference)","## Source: chat.openai.com
+
+import fiona
+from fiona.crs import from_epsg
+
+# Define the path for the new shapefile
+outname = 'empty_feature_class.shp'
+# Define the schema for the shapefile
+schema = {
+    'geometry': 'None',
+    'properties': {}
+}
+# Create an empty shapefile with the defined schema
+with fiona.open(outname, 'w', 'ESRI Shapefile', schema=schema, crs=from_epsg(4326)) as output:
+    pass  #Leave empty","Help from chat.openai.com 
+--Create table which is a feature class
+CREATE TABLE thing1 (
+	id SERIAL PRIMARY KEY,
+	shape GEOMETRY(Point, 4326),
+	name TEXT
+	);"
+Add points to a feature class,"Be sure Feature Class was created as a a Feature Class ""Point"" Type > Go to Edit and Create > Select Feature Class > Create Points","#REFRENCE https://pro.arcgis.com/en/pro-app/3.1/arcpy/get-started/writing-geometries.htm
+
+#Add points
+thing2 = ""PointClass""
+
+point_class = arcpy.CreateFeatureclass_management(out_path = arcpy.env.workspace,
+                                     out_name = thing2,
+                                     geometry_type = ""POINT"",
+                                     spatial_reference = spatial_reference)
+
+# Insert new points into the feature class
+with arcpy.da.InsertCursor(point_class, [""SHAPE@XY""]) as cursor:
+    x = (-93.2650, 44.9778)
+    y = (-93.1780, 45.0569)
+    z = (-93.0900, 44.9537)
+    cursor.insertRow([x])
+    cursor.insertRow([y])
+    cursor.insertRow([z])","import fiona
+from fiona.crs import from_epsg
+from shapely.geometry import Point
+#Define name of point shapefile
+outname = 'thing1.shp'
+#Define schema
+schema = {'geometry':'Point'}
+#List of Points
+points = [(-93.2650, 44.9778),(-93.1780, 45.0569),(-93.0900, 44.9537)]
+#For loop to write points to shapefile
+with fiona.open(outname, 'w', 'ESRI Shapefile', schema=schema, crs=from_epsg(4326)) as out:
+    for i in range(len(points)):
+        point = Point(points[i])
+        out.write({'geometry': {'type': 'Point', 'coordinates': (point.x, point.y)}, 'properties': {}})","INSERT INTO thing1 (shape, name)
+VALUES (ST_SetSRID(ST_MakePoint(-93.2650, 44.9778), 4326), 'Point 1'),
+(ST_SetSRID(ST_MakePoint(-93.1780, 45.0569), 4326), 'Point 2'),
+(ST_SetSRID(ST_MakePoint(-93.0900, 44.9537), 4326), 'Point 3');"
+Add line to a feature class,"Be sure Feature Class was created as a a Feature Class ""Line"" Type > Go to Edit > Create > Select Line Feature Class > Create Line ","#Add lines
+thing3 = ""LineClass""
+line_class = arcpy.CreateFeatureclass_management(out_path = arcpy.env.workspace,
+                                     out_name = thing3,
+                                     geometry_type = ""POLYLINE"",
+                                     spatial_reference = spatial_reference)
+
+x = arcpy.Point(-93.2650, 44.9778)
+y = arcpy.Point(-93.1780, 45.0569)
+z = arcpy.Point(-93.0900, 44.9537)
+arc_array = arcpy.Array([x, y, z])
+line = arcpy.Polyline(arc_array)
+
+# Insert new points into the feature class
+with arcpy.da.InsertCursor(line_class, [""SHAPE@""]) as cursor:
+    cursor.insertRow([line])","import fiona
+from fiona.crs import from_epsg
+from shapely.geometry import LineString, Point
+#Define name of point shapefile
+outname = 'thing2.shp'
+#Define schema
+schema = {'geometry':'LineString'}
+#List of Points
+points = [(-93.2650, 44.9778),(-93.1780, 45.0569),(-93.0900, 44.9537)]
+#For loop to write line to shapefile
+with fiona.open(outname, 'w', 'ESRI Shapefile', schema=schema, crs=from_epsg(4326)) as out:
+    line = LineString(points)
+    out.write({'geometry': {'type': 'LineString', 'coordinates': list(line.coords)}, 'properties': {}})","~--Help from chat.openai.com 
+--Create table which is a feature class
+CREATE TABLE lineclass (
+	id SERIAL PRIMARY KEY,
+	shape GEOMETRY(LineString, 4326),
+	name TEXT
+	);
+
+--Insert Line Into Table
+INSERT INTO lineclass (shape, name)
+SELECT ST_MakeLine(ARRAY[
+    ST_SetSRID(ST_MakePoint(-93.2650, 44.9778), 4326),
+    ST_SetSRID(ST_MakePoint(-93.1780, 45.0569), 4326),
+    ST_SetSRID(ST_MakePoint(-93.0900, 44.9537), 4326)
+]) AS shape, 'Line 1' AS name;"
+Add polygons to a feature class,"Be sure Feature Class was created as a a Feature Class ""Polygon"" Type > Go to Edit > Create > Select Polygon Feature Class > Create Polygon ","#Add polygons to feature class
+out4 = ""polyClass""
+poly_class = arcpy.CreateFeatureclass_management(out_path = arcpy.env.workspace,
+                                     out_name = out4,
+                                     geometry_type = ""POLYGON"",
+                                     spatial_reference = spatial_reference)
+
+x = arcpy.Point(-93.2650, 44.9778)
+y = arcpy.Point(-93.1780, 45.0569)
+z = arcpy.Point(-93.0900, 44.9537)
+arc_array = arcpy.Array([x, y, z])
+polygon = arcpy.Polygon(arc_array)
+
+# Insert new points into the feature class
+with arcpy.da.InsertCursor(poly_class, [""SHAPE@""]) as cursor:
+    cursor.insertRow([polygon])","###Source: chat.openai.com
+
+import fiona
+from fiona.crs import from_epsg
+from shapely.geometry import Polygon, Point
+#Define name of point shapefile
+outname = 'thing3.shp'
+#Define schema
+schema = {'geometry':'Polygon'}
+#List of Points
+points = [(-93.2650, 44.9778),(-93.1780, 45.0569),(-93.0900, 44.9537)]
+#For loop to write polygon to shapefile
+with fiona.open(outname, 'w', 'ESRI Shapefile', schema=schema, crs=from_epsg(4326)) as out:
+    poly = Polygon(points)
+    out.write({'geometry': {'type': 'Polygon', 'coordinates': [list(poly.exterior.coords)]}, 'properties': {}})","~--Create table which is a feature class
+CREATE TABLE polyclass (
+	id SERIAL PRIMARY KEY,
+	shape GEOMETRY(Polygon, 4326),
+	name TEXT
+	);
+
+--Insert points into polygon, has to close
+INSERT INTO polyclass (shape, name)
+SELECT ST_MakePolygon(ST_MakeLine(ARRAY[
+    ST_SetSRID(ST_MakePoint(-93.2650, 44.9778), 4326),
+    ST_SetSRID(ST_MakePoint(-93.1780, 45.0569), 4326),
+    ST_SetSRID(ST_MakePoint(-93.0900, 44.9537), 4326),
+    ST_SetSRID(ST_MakePoint(-93.2650, 44.9778), 4326)
+])) AS shape, 'Polygon 1' AS name;"
+View each row in an attribute table for a feature class,In contents > right click layer > click attribute table,"#View rows
+with arcpy.da.SearchCursor(point_class, ""*"") as cursor:
+    for row in cursor:
+        print(row)","##Source: chat.openai.com
+
+import fiona
+
+shapepath = 'thing3.shp'
+#Print out Rows
+with fiona.open(shapepath, 'r') as shapefile:
+    for feature in shapefile:
+        properties = feature['properties']
+        print(properties)","~--View Rows and view Geometry Object
+SELECT *
+FROM thing1;"
+View each geometry object in a feature class,In map pane > pan and zoom,"#View geom
+with arcpy.da.SearchCursor(poly_class, [""SHAPE@WKT""]) as cursor:
+    for row in cursor:
+        # Each row's first element (row[0]) is the WKT representation of the geometry
+        wkt = row[0]
+        print(f""WKT: {wkt}"")","## Source: chat.openai.com
+import fiona
+
+shapepath = 'thing3.shp'
+
+with fiona.open(shapepath, 'r') as shapefile:
+    #Print Geometry
+    for i, feature in enumerate(shapefile):
+        geometry = feature['geometry']
+        print(geometry)","~--View Rows and view Geometry Object
+SELECT *
+FROM thing1;"
+Summarize the contents of a feature class,"In attribute table, view headings","#Summarize contents of feature class
+fields = arcpy.ListFields(poly_class)
+
+# Extract the field names from the Field objects to get the header row
+header_row = [field.name for field in fields]
+
+# Print the header row
+print(header_row)","## Source: chat.openai.com
+
+import fiona
+shapefile_path = 'thing3.shp'
+
+with fiona.open(shapefile_path, 'r') as shapefile:
+    # Print the headings
+    print(shapefile.schema['properties'])","~--View Rows and view Geometry Object
+SELECT *
+FROM thing1;"
+Export to shapefile,In contents pane > right click layer > data > export features > choose folder location > name it <name>.shp,"#Export as shapefile
+arcpy.FeatureClassToFeatureClass_conversion(line_class, r"""", ""Line_Output"")","# We have been exporting as shapefile the entire time, see this example
+import fiona
+from fiona.crs import from_epsg
+from shapely.geometry import Point
+#Define name of point shapefile
+outname = 'thing1.shp'
+#Define schema
+schema = {'geometry':'Point'}
+#List of Points
+points = [(-93.2650, 44.9778),(-93.1780, 45.0569),(-93.0900, 44.9537)]
+#For loop to write points to shapefile
+with fiona.open(outname, 'w', 'ESRI Shapefile', schema=schema, crs=from_epsg(4326)) as out:
+    for i in range(len(points)):
+        point = Point(points[i])
+        out.write({'geometry': {'type': 'Point', 'coordinates': (point.x, point.y)}, 'properties': {}})",Connected Database to ArcGIS Pro and exported from there. Right click on feature class -> Export -> Feature Class to Shapefile
+Export to geodatabase,In contents pane > right click layer > export > feature class to geodatabase > name it <name>.gdb,"#Export geodatabase
+arcpy.FeatureClassToFeatureClass_conversion(line_class, ""Lab1.gdb"", ""Line_Output2"")",No built into fiona,Connected Database to ArcGIS Pro and exported from there. Right click on feature class -> Export -> Feature Class to Geodatabase
