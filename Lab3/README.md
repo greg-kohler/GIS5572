@@ -1,4 +1,4 @@
- # Elevation and Temperature Interpolation Project
+ # Lab 3
 
 This repository contains code for an interpolation project that involves pulling elevation and temperature point data from a database, sampling data from both datasets, performing exploratory interpolation, applying IDW (Inverse Distance Weighting), Kriging, and Kernel interpolation methods, and pushing the results back to the database. Additionally, it includes code for performing accuracy assessment using the Kriging data. The project is then deployed to Google Cloud Run, allowing access through an API link.
 
