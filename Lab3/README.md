@@ -4,6 +4,9 @@ This repository contains code for an interpolation project that involves pulling
 
 ## Overview
 
+![alt text](interpolationflow.png)
+![alt text](apiflow.png)
+
 This project aims to interpolate elevation and temperature data to provide spatial estimates across a geographic area. The interpolation methods used include IDW, Kriging, and Kernel interpolation. Accuracy assessment is conducted to evaluate the performance of the Kriging method.
 
 ## Features
